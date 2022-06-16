@@ -40,9 +40,52 @@ class Tree
     root
   end
 
+  def delete(value, root = @root)
+    # base case
+    return nil if root.nil?
+
+    # recursively go through tree until value is reached
+    if root.data > value
+      root.left = delete(value, root.left)
+      root
+    elsif root.data < value
+      root.right = delete(value, root.right)
+      root
+    else
+      # check if root has one child
+      if root.left.nil?
+        temp = root.right
+        nil
+        temp
+      elsif root.right.nil?
+        temp = root.left
+        nil
+        temp
+      elsif !root.right.nil? && !root.left.nil?
+        #find in order successor
+        temp = root.right
+        until !temp.left.nil?
+          temp = temp.right
+        end
+        temp = temp.left
+        #replace root with successor
+        root.data = temp.data
+        #delete previous successor node
+        root.right = delete(temp.data, root.right)
+        root
+      end
+    end
+  end
+
+  def pretty_print(node = @root, prefix = '', is_left = true)
+    pretty_print(node.right, "#{prefix}#{is_left ? '│   ' : '    '}", false) if node.right
+    puts "#{prefix}#{is_left ? '└── ' : '┌── '}#{node.data}"
+    pretty_print(node.left, "#{prefix}#{is_left ? '    ' : '│   '}", true) if node.left
+  end
 end
 
 t = Tree.new([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324])
-p t.root
 t.insert(10000)
+t.delete(1)
+t.delete(67)
 p t.pretty_print
