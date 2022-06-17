@@ -101,6 +101,15 @@ class Tree
     puts order unless block_given?
   end
 
+  def recursive_level_order(root = @root, queue = [root], order = [])
+    queue << root.left unless root.left.nil?
+    queue << root.right unless root.right.nil?
+    order << queue.shift.data
+    return puts order if queue.empty?
+
+    recursive_level_order(queue[0], queue, order)
+  end
+
   def inorder(root = @root, &block)
     order = []
     return if root.nil?
@@ -144,4 +153,4 @@ end
 t = Tree.new([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324])
 t.insert(10000)
 t.pretty_print
-t.postorder
+t.recursive_level_order
