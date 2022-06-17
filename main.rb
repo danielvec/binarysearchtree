@@ -101,6 +101,39 @@ class Tree
     puts order unless block_given?
   end
 
+  def inorder(root = @root, &block)
+    order = []
+    return if root.nil?
+
+    inorder(root.left, &block)
+    yield(root.data) if block_given?
+    order << root.data
+    puts order unless block_given?
+    inorder(root.right, &block)
+  end
+
+  def preorder(root = @root, &block)
+    order = []
+    return if root.nil?
+
+    yield(root.data) if block_given?
+    order << root.data
+    puts order unless block_given?
+    preorder(root.left, &block)
+    preorder(root.right, &block)
+  end
+
+  def postorder(root = @root, &block)
+    order = []
+    return if root.nil?
+
+    postorder(root.left, &block)
+    postorder(root.right, &block)
+    yield(root.data) if block_given?
+    order << root.data
+    puts order unless block_given?
+  end
+
   def pretty_print(node = @root, prefix = '', is_left = true)
     pretty_print(node.right, "#{prefix}#{is_left ? '│   ' : '    '}", false) if node.right
     puts "#{prefix}#{is_left ? '└── ' : '┌── '}#{node.data}"
@@ -111,4 +144,4 @@ end
 t = Tree.new([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324])
 t.insert(10000)
 t.pretty_print
-t.level_order {|node| puts "Tree has #{node}"}
+t.postorder
