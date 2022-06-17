@@ -89,6 +89,18 @@ class Tree
     end
   end
 
+  def level_order(root = @root)
+    queue = [root]
+    order = []
+    until queue.empty?
+      queue << queue[0].left unless queue[0].left.nil?
+      queue << queue[0].right unless queue[0].right.nil?
+      yield(queue.shift.data) if block_given?
+      order << queue.shift.data unless block_given?
+    end
+    puts order unless block_given?
+  end
+
   def pretty_print(node = @root, prefix = '', is_left = true)
     pretty_print(node.right, "#{prefix}#{is_left ? '│   ' : '    '}", false) if node.right
     puts "#{prefix}#{is_left ? '└── ' : '┌── '}#{node.data}"
@@ -98,7 +110,5 @@ end
 
 t = Tree.new([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324])
 t.insert(10000)
-t.delete(1)
-t.delete(67)
-p t.pretty_print
-t.find(10000)
+t.pretty_print
+t.level_order {|node| puts "Tree has #{node}"}
