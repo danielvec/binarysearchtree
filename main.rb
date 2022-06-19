@@ -143,14 +143,41 @@ class Tree
     puts order unless block_given?
   end
 
+  def height(root = @root)
+    return -1 if root.nil?
+
+    left_height = height(root.left)
+    right_height = height(root.right)
+    [left_height, right_height].max + 1
+  end
+
+  def depth(root = @root)
+    height - height(root)
+  end
+
+  def balanced?
+    root = @root
+    left_height = height(root.left)
+    right_height = height(root.right)
+    maximum = [left_height, right_height].max
+    minimum = [left_height, right_height].min
+    maximum - minimum < 2
+  end
+
   def pretty_print(node = @root, prefix = '', is_left = true)
     pretty_print(node.right, "#{prefix}#{is_left ? '│   ' : '    '}", false) if node.right
     puts "#{prefix}#{is_left ? '└── ' : '┌── '}#{node.data}"
     pretty_print(node.left, "#{prefix}#{is_left ? '    ' : '│   '}", true) if node.left
   end
+
 end
 
 t = Tree.new([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324])
 t.insert(10000)
+t.insert(10001)
+#t.insert(10002)
 t.pretty_print
 t.recursive_level_order
+p t.height
+p t.depth
+p t.balanced?
