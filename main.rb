@@ -98,7 +98,7 @@ class Tree
       yield(queue.shift.data) if block_given?
       order << queue.shift.data unless block_given?
     end
-    puts order unless block_given?
+    order unless block_given?
   end
 
   def recursive_level_order(root = @root, queue = [root], order = [])
@@ -117,7 +117,7 @@ class Tree
     inorder(root.left, &block)
     yield(root.data) if block_given?
     order << root.data
-    puts order unless block_given?
+    order unless block_given?
     inorder(root.right, &block)
   end
 
@@ -127,7 +127,7 @@ class Tree
 
     yield(root.data) if block_given?
     order << root.data
-    puts order unless block_given?
+    order unless block_given?
     preorder(root.left, &block)
     preorder(root.right, &block)
   end
@@ -140,7 +140,7 @@ class Tree
     postorder(root.right, &block)
     yield(root.data) if block_given?
     order << root.data
-    puts order unless block_given?
+    order unless block_given?
   end
 
   def height(root = @root)
@@ -164,6 +164,10 @@ class Tree
     maximum - minimum < 2
   end
 
+  def rebalance
+    @root = build_tree(level_order)
+  end
+
   def pretty_print(node = @root, prefix = '', is_left = true)
     pretty_print(node.right, "#{prefix}#{is_left ? '│   ' : '    '}", false) if node.right
     puts "#{prefix}#{is_left ? '└── ' : '┌── '}#{node.data}"
@@ -175,9 +179,8 @@ end
 t = Tree.new([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324])
 t.insert(10000)
 t.insert(10001)
-#t.insert(10002)
+t.insert(10002)
 t.pretty_print
-t.recursive_level_order
-p t.height
-p t.depth
-p t.balanced?
+t.level_order
+t.rebalance
+t.pretty_print
