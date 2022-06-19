@@ -9,7 +9,7 @@ class Node
   end
 end
 
-
+# tree class which accepts an array and creates a binary search tree
 class Tree
   attr_accessor :root
 
@@ -17,6 +17,7 @@ class Tree
     @root = build_tree(array)
   end
 
+  # method which takes an array of data and turns it into a balanced binary tree full of Node objects
   def build_tree(array)
     array = array.sort.uniq
     return if array.empty?
@@ -28,6 +29,7 @@ class Tree
     root
   end
 
+  # method which accepts a value to insert into the binary tree
   def insert(value, root = @root)
     return Node.new(value) if root.nil?
 
@@ -40,6 +42,7 @@ class Tree
     root
   end
 
+  # method which accepts a value to delete from the binary tree
   def delete(value, root = @root)
     # base case
     return nil if root.nil?
@@ -77,6 +80,7 @@ class Tree
     end
   end
 
+  # method to find a node of a given value in the tree
   def find(value, root = @root)
     if root.data > value
       root.left = find(value, root.left)
@@ -89,6 +93,7 @@ class Tree
     end
   end
 
+  # method which traverses the tree in breadth-first level order and yields each node to the provided block
   def level_order(root = @root)
     queue = [root]
     order = []
@@ -101,6 +106,7 @@ class Tree
     order unless block_given?
   end
 
+  # recursive implementation of level_order method
   def recursive_level_order(root = @root, queue = [root], order = [])
     queue << root.left unless root.left.nil?
     queue << root.right unless root.right.nil?
@@ -110,39 +116,44 @@ class Tree
     recursive_level_order(queue[0], queue, order)
   end
 
+  # method which traverses the tree inorder and yields each node to the provided block
   def inorder(root = @root, &block)
     order = []
     return if root.nil?
 
-    inorder(root.left, &block)
+    root.left.nil? && root.right.nil?
+    order << inorder(root.left, &block)
     yield(root.data) if block_given?
     order << root.data
-    order unless block_given?
-    inorder(root.right, &block)
+    order << inorder(root.right, &block)
+    order.flatten.compact unless block_given?
   end
 
+  # method which traverses the tree preorder and yields each node to the provided block
   def preorder(root = @root, &block)
     order = []
     return if root.nil?
 
     yield(root.data) if block_given?
     order << root.data
-    order unless block_given?
-    preorder(root.left, &block)
-    preorder(root.right, &block)
+    order << preorder(root.left, &block)
+    order << preorder(root.right, &block)
+    order.flatten.compact unless block_given?
   end
 
+  # method which traverses the tree postorder and yields each node to the provided block
   def postorder(root = @root, &block)
     order = []
     return if root.nil?
 
-    postorder(root.left, &block)
-    postorder(root.right, &block)
+    order << postorder(root.left, &block)
+    order << postorder(root.right, &block)
     yield(root.data) if block_given?
     order << root.data
-    order unless block_given?
+    order.flatten.compact unless block_given?
   end
 
+  # method to determine height of a node
   def height(root = @root)
     return -1 if root.nil?
 
@@ -151,10 +162,12 @@ class Tree
     [left_height, right_height].max + 1
   end
 
+  # method to determine depth of a node
   def depth(root = @root)
     height - height(root)
   end
 
+  # method to determine if tree is balanced
   def balanced?
     root = @root
     left_height = height(root.left)
@@ -164,10 +177,12 @@ class Tree
     maximum - minimum < 2
   end
 
+  # method to rebalance a tree
   def rebalance
     @root = build_tree(level_order)
   end
 
+  # method to display the tree as a tree
   def pretty_print(node = @root, prefix = '', is_left = true)
     pretty_print(node.right, "#{prefix}#{is_left ? '│   ' : '    '}", false) if node.right
     puts "#{prefix}#{is_left ? '└── ' : '┌── '}#{node.data}"
@@ -176,11 +191,28 @@ class Tree
 
 end
 
-t = Tree.new([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324])
-t.insert(10000)
-t.insert(10001)
-t.insert(10002)
-t.pretty_print
-t.level_order
-t.rebalance
-t.pretty_print
+# Create a binary search tree from an array of random numbers 
+test_tree = Tree.new(Array.new(15) { rand(1..100) })
+test_tree.pretty_print
+# Confirm that the tree is balanced by calling #balanced?
+p test_tree.balanced?
+# Print out all elements in level, pre, post, and in order
+p test_tree.level_order
+p test_tree.preorder
+p test_tree.postorder
+p test_tree.inorder
+# Unbalance the tree by adding several numbers > 100
+test_tree.insert(101)
+test_tree.insert(102)
+test_tree.insert(103)
+# Confirm that the tree is unbalanced by calling #balanced?
+p test_tree.balanced?
+# Balance the tree by calling #rebalance
+test_tree.rebalance
+# Confirm that the tree is balanced by calling #balanced?
+p test_tree.balanced?
+# Print out all elements in level, pre, post, and in order
+p test_tree.level_order
+p test_tree.preorder
+p test_tree.postorder
+p test_tree.inorder
